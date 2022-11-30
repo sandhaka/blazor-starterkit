@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\InMemorySampleDatabase\InMemorySampleDatabase.csproj" />
-    <ProjectReference Include="..\Razor.Collection\Razor.Collection.csproj" />
   </ItemGroup>
 
 </Project>

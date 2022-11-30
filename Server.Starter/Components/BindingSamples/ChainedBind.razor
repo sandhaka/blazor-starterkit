@@ -1,0 +1,31 @@
+@namespace Components.BindingSamples
+
+<h3>ChainedBind</h3>
+
+<div class="row" style="border: solid 1px black; padding: 5px">
+    <div class="col-12">
+        <p>Child <code>Year</code>: @Year</p>
+    </div>
+    <div class="col-12">
+        <button @onclick="UpdateYearFromChild">Update Year from Child</button>
+    </div>
+</div>
+
+@code {
+    private readonly Random _r = new();
+    
+    [Parameter]
+    public int Year { get; set; }
+
+    [Parameter]
+    public EventCallback<int> YearChanged { get; set; }
+    
+    // This is an equivalent of:
+    // <ChildBind @bind-Year="year" @bind-Year:event="YearChanged" />
+    // from parent point of view
+
+    private async Task UpdateYearFromChild()
+    {
+        await YearChanged.InvokeAsync(_r.Next(1950, 2021));
+    }
+}

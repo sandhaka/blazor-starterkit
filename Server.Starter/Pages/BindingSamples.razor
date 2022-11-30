@@ -5,5 +5,30 @@
 <BindSimpleValues></BindSimpleValues>
 <hr/>
 <TableSample></TableSample>
+<hr/>
+<BindAfterSample></BindAfterSample>
+<hr/>
+<ChainedBind @bind-Year=_year @bind-Year:after="UpdateYear"></ChainedBind>
+Parent Year: <code>@_year</code>
+<hr/>
+<EventCallback OnClickCallback="OnClickEventHandler"></EventCallback>
+<hr/>
+<PasswordEntry @bind-Password="_password"></PasswordEntry>
+Password Value: <code>@_password</code>
+<hr/>
 
-@code { }
+@code {
+
+    private int _year = DateTime.Now.Year;
+    private string? _password;
+    
+    private void UpdateYear()
+    {
+        Console.WriteLine("Updating ...");
+    }
+
+    private void OnClickEventHandler(MouseEventArgs e)
+    {
+        Console.WriteLine($"Click coordinates: ({e.ScreenX}:{e.ScreenY})");
+    }
+}

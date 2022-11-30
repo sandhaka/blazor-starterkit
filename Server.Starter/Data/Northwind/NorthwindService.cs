@@ -24,8 +24,8 @@ internal sealed class NorthwindService : INorthwindService
     {
         Expression<Func<Product, bool>> e = p =>
             p.ProductName.Contains(nameText, StringComparison.InvariantCultureIgnoreCase) &&
-            p.UnitPrice > priceFrom &&
-            p.UnitPrice < priceTo;
+            p.UnitPrice >= priceFrom &&
+            p.UnitPrice <= priceTo;
 
         var filterExTree = e.Compile();
 
