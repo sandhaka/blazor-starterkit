@@ -1,0 +1,37 @@
+@namespace Components.BindingSamples
+
+<h3>
+    Simple Value
+</h3>
+
+<div class="row">
+    <div class="col-4">
+        <label>Example Input: </label>
+    </div>
+    <div class="col-8">
+        <input @bind="_value" @oninput="@Search" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-4">
+        <label>Bind Value: </label>
+    </div> 
+    <div class="col-6">
+        <label>@_value</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-4">
+        <label>On Input Value: </label>
+    </div> 
+    <div class="col-6">
+        <label>@_onInputValue</label>
+    </div>
+</div>
+
+@code {
+    private string? _value;
+    private string? _onInputValue;
+
+    async Task Search(ChangeEventArgs e) => _onInputValue = e.Value as string;
+}
