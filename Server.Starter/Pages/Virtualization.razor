@@ -1,0 +1,117 @@
+@page "/virtualization"
+
+@using Server.Starter.Data.Northwind
+@using InMemorySampleDatabase.Entities
+
+@inject INorthwindService NorthwindService
+
+<h3>Product Table</h3>
+<hr/>
+<div class="row">
+    <div class="col-2 control-center">
+        <label>From Price</label>
+    </div>
+    <div class="col-2 control-center">
+       <label>To Price</label>
+    </div>
+    <div class="col-8 control-center">
+        <label>Search Name</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-2">
+        <input class="form-control" type="number" @bind="FromPrice" @bind:event="oninput">
+    </div>
+    <div class="col-2">
+        <input class="form-control" type="number" @bind="ToPrice" @bind:event="oninput">
+    </div>
+    <div class="col-8">
+        <input class="form-control" type="text" @bind="TextInclude" @bind:event="oninput">
+    </div>
+</div>
+
+<hr/>
+
+<div class="row">
+    <div class="col-12">
+        <table class="table table-striped">
+            <thead style="position: sticky; top: 0; background-color: silver">
+            <tr>
+                <th>Category</th>
+                <th>Name</th>
+                <th>Price (Unit) $</th>
+                <th>Stock</th>
+                <th>Supplier</th>
+            </tr>
+            </thead>
+            <tbody>
+            <Virtualize
+                Context="product" 
+                ItemsProvider="@LoadProducts" TItem="Product"
+                SpacerElement="tr"
+                @ref="_productsVirtualizationComponent">
+                <ItemContent>
+                    <tr>
+                        <td>@product.Category.CategoryName</td>
+                        <td>@product.ProductName</td>
+                        <td>@product.UnitPrice</td>
+                        <td>@product.UnitsInStock</td>
+                        <td>@product.Supplier.CompanyName (@product.Supplier.ContactName)</td>
+                    </tr>
+                </ItemContent>
+                <Placeholder>
+                    Loading ...
+                </Placeholder>
+            </Virtualize>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+
+    private string _textInclude = string.Empty;
+    private decimal _fromPrice;
+    private decimal _toPrice = 10000;
+    
+    private string TextInclude
+    {
+        get => _textInclude;
+        set
+        {
+            _textInclude = value;
+            _productsVirtualizationComponent?.RefreshDataAsync();
+        }
+    }
+
+    private decimal FromPrice
+         {
+             get => _fromPrice;
+             set
+             {
+                 _fromPrice = value;
+                 _productsVirtualizationComponent?.RefreshDataAsync();
+             }
+         }
+    private decimal ToPrice
+    {
+        get => _toPrice;
+        set
+        {
+            _toPrice = value;
+            _productsVirtualizationComponent?.RefreshDataAsync();
+        }
+    }
+
+    private Virtualize<Product>? _productsVirtualizationComponent;
+
+    // Page sync initialization
+    protected override void OnInitialized() { }
+
+    private ValueTask<ItemsProviderResult<Product>> LoadProducts(ItemsProviderRequest request)
+    {
+        var totalProducts = NorthwindService.Count(_textInclude, _fromPrice, _toPrice);
+        var products = NorthwindService.GetVirtualPage(_textInclude, _fromPrice, _toPrice, request.Count, request.StartIndex);
+        return ValueTask.FromResult(new ItemsProviderResult<Product>(products, totalProducts));
+    }
+}

@@ -7,7 +7,9 @@ namespace Server.Starter.Data.Northwind;
 
 internal interface INorthwindService
 {
-    PagedResult<Product> GetPagedProduct(string nameText, decimal priceFrom, decimal priceTo, int pageSize, int pageNumber);
+    PagedResult<Product> GetPaged(string nameText, decimal priceFrom, decimal priceTo, int pageSize, int pageNumber);
+    IEnumerable<Product> GetVirtualPage(string nameText, decimal priceFrom, decimal priceTo, int count, int offset, string? orderBy = null);
+    int Count(string nameText, decimal priceFrom, decimal priceTo);
 }
 
 internal sealed class NorthwindService : INorthwindService
@@ -18,14 +20,14 @@ internal sealed class NorthwindService : INorthwindService
     {
         _dbContext = dbContext;
     }
-
-    public PagedResult<Product> GetPagedProduct(
+    
+    public PagedResult<Product> GetPaged(
         string nameText, decimal priceFrom, decimal priceTo, int pageSize, int pageNumber)
     {
         Expression<Func<Product, bool>> e = p =>
             p.ProductName.Contains(nameText, StringComparison.InvariantCultureIgnoreCase) &&
-            p.UnitPrice >= priceFrom &&
-            p.UnitPrice <= priceTo;
+            p.UnitPrice > priceFrom &&
+            p.UnitPrice < priceTo;
 
         var filterExTree = e.Compile();
 
@@ -44,4 +46,30 @@ internal sealed class NorthwindService : INorthwindService
             Total = itemCount
         };
     }
+
+    public IEnumerable<Product> GetVirtualPage(
+        string nameText, decimal priceFrom, decimal priceTo, int count, int offset, string? orderBy = null)
+    {
+        Expression<Func<Product, bool>> e = p =>
+            p.ProductName.Contains(nameText, StringComparison.InvariantCultureIgnoreCase) &&
+            p.UnitPrice >= priceFrom &&
+            p.UnitPrice <= priceTo;
+
+        var filterExTree = e.Compile();
+
+        return _dbContext.Products
+            .Include(p => p.Category)
+            .Include(p => p.Supplier)
+            .Where(filterExTree)
+            .OrderByDescending(p => p.UnitPrice)
+            .Skip(offset)
+            .Take(count)
+            .ToList();
+    }
+
+    public int Count(string nameText, decimal priceFrom, decimal priceTo) =>
+        _dbContext.Products.Count(p =>
+            p.ProductName.Contains(nameText, StringComparison.InvariantCultureIgnoreCase) &&
+            p.UnitPrice >= priceFrom &&
+            p.UnitPrice <= priceTo);
 }

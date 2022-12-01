@@ -65,6 +65,6 @@ else
 
     private void Load()
     {
-        _productsData = NorthwindService.GetPagedProduct(_textInclude, _fromPrize, _toPrice, _pageSize, _pageNumber);
+        _productsData = NorthwindService.GetPaged(_textInclude, _fromPrize, _toPrice, _pageSize, _pageNumber);
     }
 }

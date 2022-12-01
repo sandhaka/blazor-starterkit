@@ -1,7 +1,63 @@
 @page "/lifecycles"
 
-<h1>Lifecycles</h1>
+<h3>SampleCycles</h3>
+
+<strong>see console output ...</strong>
+
+<div class="row">
+    <div class="col-12">
+        <label>@ComponentArg</label>
+    </div>
+</div>
 
 @code {
+
+    [Parameter] public string? ComponentArg { get; set; }
     
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("OnInitialized");
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        Console.WriteLine("OnParametersSet");
+        base.OnParametersSet();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        // Use this stage to perform additional initialization steps with the rendered content,
+        // such as JS interop calls that interact with the rendered DOM elements.
+        Console.WriteLine($"OnAfterRender, first render: {firstRender}");
+        base.OnAfterRender(firstRender);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("OnInitializedAsync");
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine("OnParametersSetAsync");
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Console.WriteLine("OnAfterRenderAsync");
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        Console.WriteLine("SetParametersAsync, params:");
+        foreach (var parameterValue in parameters)
+            Console.WriteLine($" {parameterValue.Name}:{parameterValue.Value}");
+        
+        await base.SetParametersAsync(parameters);
+    }
 }

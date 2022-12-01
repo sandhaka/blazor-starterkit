@@ -10,4 +10,8 @@
     <ProjectReference Include="..\InMemorySampleDatabase\InMemorySampleDatabase.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Lifecycles\SampleCycles.razor" />
+  </ItemGroup>
+
 </Project>
