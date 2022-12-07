@@ -1,0 +1,30 @@
+@page "/dynamic"
+
+<h3>DynamicComponent</h3>
+
+<strong>
+    Select a component to render:
+</strong>
+
+<select class="form-select" @onchange="onDropdownChange">
+    <option value="">Select a value</option>
+    <option value="@nameof(First)">Component 1</option>
+    <option value="@nameof(Second)">Component 2</option>
+    <option value="@nameof(Third)">Component 3</option>
+</select>
+
+@if (_selectedType is not null)
+{
+    <div class="border border-primary my-1 p-1">
+        <DynamicComponent Type="@_selectedType" />
+    </div>
+}
+
+@code {
+    private Type? _selectedType;
+
+    private void onDropdownChange(ChangeEventArgs e)
+    {
+        _selectedType = e.Value?.ToString()?.Length > 0 ? Type.GetType($"Components.DynamicComponent.{e.Value}") : null;
+    }
+}
