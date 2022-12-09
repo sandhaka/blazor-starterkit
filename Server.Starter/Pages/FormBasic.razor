@@ -5,65 +5,67 @@
 @implements IDisposable
 
 <h3>FormSample</h3>
-<p>Compose your vegetable box for the next week and submit!</p>
+<p>Compose your vegetable box for the next week!</p>
 
-<EditForm EditContext="_editContext" OnValidSubmit="@HandleValidSubmit">
+<EditForm EditContext="_editContext" OnValidSubmit="@HandleValidSubmit" class="form-group">
     <DataAnnotationsValidator/>
+    <ValidationSummary />
+    
     <div class="row">
         <div class="col-4">
-            <label>
+            <label class="form-label">
                 Salad
                 <InputNumber
                     class="form-control"
                     TValue="int"
                     @bind-Value="_formModel.Salad"
-                    DisplayName="Salad in grams">
+                    DisplayName="Salad">
                 </InputNumber>
             </label>
         </div>
         <div class="col-4">
-            <label>
+            <label class="form-label">
                 Carrots
                 <InputNumber
                     class="form-control"
                     TValue="int"
                     @bind-Value="_formModel.Carrots"
-                    DisplayName="Carrots in grams">
+                    DisplayName="Carrots">
                 </InputNumber>
             </label>
         </div>
         <div class="col-4">
-            <label>
+            <label class="form-label">
                 Cabbage
                 <InputNumber
                     class="form-control"
                     TValue="int"
                     @bind-Value="_formModel.Cabbage"
-                    DisplayName="Cabbage in grams">
+                    DisplayName="Cabbage">
                 </InputNumber>
             </label>
         </div>
     </div>
     <div class="row">
         <div class="col-4">
-            <label>
+            <label class="form-label">
                 Leeks
                 <InputNumber
                     class="form-control"
                     TValue="int"
                     @bind-Value="_formModel.Leek"
-                    DisplayName="Leek in grams">
+                    DisplayName="Leek">
                 </InputNumber>
             </label>
         </div>
         <div class="col-4">
-            <label>
+            <label class="form-label">
                 Lentils
                 <InputNumber
                     class="form-control"
                     TValue="int"
                     @bind-Value="_formModel.Lentils"
-                    DisplayName="Lentils in grams">
+                    DisplayName="Lentils">
                 </InputNumber>
             </label>
         </div>
@@ -71,11 +73,66 @@
     <hr/>
     <div class="row">
         <div class="col-12">
-            <label>
+            <label><strong>Destination: </strong></label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <label class="form-label">
+                Recipient name
+                <InputText
+                    class="form-control"
+                    DisplayName="Recipient name"
+                    @bind-Value="_formModel.Recipient"/>
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <label class="form-label">
+                Address
+                <InputText
+                    class="form-control"
+                    DisplayName="Street address"
+                    @bind-Value="_formModel.Address"/>
+            </label>
+        </div>
+        <div class="col-4">
+            <label class="form-label">
+                Number
+                <InputText
+                    class="form-control"
+                    DisplayName="Street number"
+                    @bind-Value="_formModel.StreetNumber"/>
+            </label>
+        </div>
+        <div class="col-4">
+            <label class="form-label">
+                City
+                <InputText
+                    class="form-control"
+                    DisplayName="City"
+                    @bind-Value="_formModel.City"/>
+            </label>
+        </div>
+        <div class="col-2">
+            <label class="form-label">
+                Cap
+                <InputText
+                    class="form-control"
+                    DisplayName="Cap"
+                    @bind-Value="_formModel.Cap"/>
+            </label>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-3">
+            <label class="form-label">
                 Delivery day
                 <InputSelect
                     TValue="string"
-                    class="form-control"
+                    class="form-select"
                     DisplayName="Delivery day"
                     @bind-Value="_formModel.PreferredDeliveryDay">
                     <option value="@string.Empty">Select a preferred day</option>
@@ -85,18 +142,18 @@
                 </InputSelect>
             </label>
         </div>
-    </div>
-    <hr/>
-    <div class="row">
-        <div class="col-12">
-            <button class="btn btn-primary" type="submit" disabled="@_formInvalid">Submit</button>
+        <div class="col-3">
+            <label class="form-label">
+                Place order
+                <button class="form-control btn btn-primary" type="submit">Submit</button>
+            </label>
         </div>
     </div>
     <hr/>
     <div class="row">
         <div class="col-12">
             <code>
-                @_serializedRequest
+                @_serializedPlacedOrderData
             </code>
         </div>
     </div>
@@ -104,50 +161,55 @@
 
 @code {
 
-    internal class VegetablesBox
+    internal class VegetablesOrderBoxFormModel
     {
-        [Required]
-        public string? PreferredDeliveryDay { get; set; }
-
-        public int Salad { get; set; }
-        public int Carrots { get; set; }
-        public int Cabbage { get; set; }
+        public int Salad { get; set; } = 230;
+        public int Carrots { get; set; } = 1100;
+        public int Cabbage { get; set; } = 860;
         public int Leek { get; set; }
         public int Lentils { get; set; }
+        
+        [Required(ErrorMessage = "Preferred delivery day field is required")]
+        public string? PreferredDeliveryDay { get; set; }
+        [Required]
+        [MinLength(4)]
+        [MaxLength(32)]
+        public string? Recipient { get; set; }
+        [Required]
+        [MinLength(6)]
+        [MaxLength(32)]
+        public string? Address { get; set; }
+        [Required]
+        [MinLength(1)]
+        [MaxLength(3)]
+        public string? StreetNumber { get; set; }
+        [Required]
+        [MinLength(2)]
+        [MaxLength(16)]
+        public string? City { get; set; }
+        [Required]
+        [StringLength(5)]
+        public string? Cap { get; set; }
     }
 
-    private readonly VegetablesBox _formModel = new();
+    private readonly VegetablesOrderBoxFormModel _formModel = new();
     private EditContext? _editContext;
-    private ValidationMessageStore? _messageStore;
-    private bool _formInvalid = true;
-    private string _serializedRequest = string.Empty;
+    private string _serializedPlacedOrderData = string.Empty;
 
     protected override void OnInitialized()
     {
-        _editContext = new(_formModel);
+        _editContext = new EditContext(_formModel);
         _editContext.OnValidationRequested += HandleValidationRequested;
-        _editContext.OnFieldChanged += HandleFieldChanged;
-        _messageStore = new(_editContext);
-    }
-
-    private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
-    {
-        if (_editContext is null)
-            return;
-
-        _formInvalid = !_editContext.Validate();
-        StateHasChanged();
     }
 
     private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs e)
     {
-        _messageStore?.Clear();
-        _serializedRequest = string.Empty;
+        _serializedPlacedOrderData = string.Empty;
     }
 
     private void HandleValidSubmit()
     {
-        _serializedRequest = JsonSerializer.Serialize(
+        _serializedPlacedOrderData = JsonSerializer.Serialize(
             _formModel,
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true }
             );
@@ -159,7 +221,5 @@
             return;
 
         _editContext.OnValidationRequested -= HandleValidationRequested;
-        _editContext.OnFieldChanged -= HandleFieldChanged;
     }
-
 }

@@ -14,4 +14,8 @@
     <_ContentIncludedByDefault Remove="Components\Lifecycles\SampleCycles.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\AdvancedForm" />
+  </ItemGroup>
+
 </Project>
