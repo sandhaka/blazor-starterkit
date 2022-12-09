@@ -1,0 +1,165 @@
+@page "/form"
+
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@implements IDisposable
+
+<h3>FormSample</h3>
+<p>Compose your vegetable box for the next week and submit!</p>
+
+<EditForm EditContext="_editContext" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator/>
+    <div class="row">
+        <div class="col-4">
+            <label>
+                Salad
+                <InputNumber
+                    class="form-control"
+                    TValue="int"
+                    @bind-Value="_formModel.Salad"
+                    DisplayName="Salad in grams">
+                </InputNumber>
+            </label>
+        </div>
+        <div class="col-4">
+            <label>
+                Carrots
+                <InputNumber
+                    class="form-control"
+                    TValue="int"
+                    @bind-Value="_formModel.Carrots"
+                    DisplayName="Carrots in grams">
+                </InputNumber>
+            </label>
+        </div>
+        <div class="col-4">
+            <label>
+                Cabbage
+                <InputNumber
+                    class="form-control"
+                    TValue="int"
+                    @bind-Value="_formModel.Cabbage"
+                    DisplayName="Cabbage in grams">
+                </InputNumber>
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <label>
+                Leeks
+                <InputNumber
+                    class="form-control"
+                    TValue="int"
+                    @bind-Value="_formModel.Leek"
+                    DisplayName="Leek in grams">
+                </InputNumber>
+            </label>
+        </div>
+        <div class="col-4">
+            <label>
+                Lentils
+                <InputNumber
+                    class="form-control"
+                    TValue="int"
+                    @bind-Value="_formModel.Lentils"
+                    DisplayName="Lentils in grams">
+                </InputNumber>
+            </label>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-12">
+            <label>
+                Delivery day
+                <InputSelect
+                    TValue="string"
+                    class="form-control"
+                    DisplayName="Delivery day"
+                    @bind-Value="_formModel.PreferredDeliveryDay">
+                    <option value="@string.Empty">Select a preferred day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                </InputSelect>
+            </label>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-12">
+            <button class="btn btn-primary" type="submit" disabled="@_formInvalid">Submit</button>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-12">
+            <code>
+                @_serializedRequest
+            </code>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+
+    internal class VegetablesBox
+    {
+        [Required]
+        public string? PreferredDeliveryDay { get; set; }
+
+        public int Salad { get; set; }
+        public int Carrots { get; set; }
+        public int Cabbage { get; set; }
+        public int Leek { get; set; }
+        public int Lentils { get; set; }
+    }
+
+    private readonly VegetablesBox _formModel = new();
+    private EditContext? _editContext;
+    private ValidationMessageStore? _messageStore;
+    private bool _formInvalid = true;
+    private string _serializedRequest = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _editContext = new(_formModel);
+        _editContext.OnValidationRequested += HandleValidationRequested;
+        _editContext.OnFieldChanged += HandleFieldChanged;
+        _messageStore = new(_editContext);
+    }
+
+    private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        if (_editContext is null)
+            return;
+
+        _formInvalid = !_editContext.Validate();
+        StateHasChanged();
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs e)
+    {
+        _messageStore?.Clear();
+        _serializedRequest = string.Empty;
+    }
+
+    private void HandleValidSubmit()
+    {
+        _serializedRequest = JsonSerializer.Serialize(
+            _formModel,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true }
+            );
+    }
+
+    public void Dispose()
+    {
+        if (_editContext is null)
+            return;
+
+        _editContext.OnValidationRequested -= HandleValidationRequested;
+        _editContext.OnFieldChanged -= HandleFieldChanged;
+    }
+
+}
