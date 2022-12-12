@@ -12,6 +12,7 @@ builder.Services.AddServerSideBlazor();
 // Register services
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<INorthwindService, NorthwindService>();
+builder.Services.AddScoped<IBzTableDataNorthwindProvider, BzTableDataNorthwindProvider>();
 
 // DbContext
 builder.Services.AddDbContext<NorthwindContext>(options => options.UseInMemoryDatabase(databaseName: "Northwind"));

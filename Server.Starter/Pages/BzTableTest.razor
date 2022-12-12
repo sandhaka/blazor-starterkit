@@ -1,0 +1,47 @@
+@page "/bztabletest"
+
+@using BzTable
+@using Server.Starter.Data.Northwind
+
+@inject IBzTableDataNorthwindProvider BzTableDataProvider;
+
+<BzTable
+    Fields="@FieldsList"
+    Config="@Config"
+    DataProvider="@BzTableDataProvider">
+</BzTable>
+
+@code {
+
+    private List<BzTableField>? FieldsList { get; set; }
+    private BzTableConfig? Config { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Config = new BzTableConfig
+        {
+            BuildFilters = false,
+            MakeSortable = false,
+            TableCssClass = "table-striped"
+        };
+
+        FieldsList = new List<BzTableField>
+        {
+            new()
+            {
+                Key = "Name",
+                Label = "Name"
+            },
+            new()
+            {
+                Key = "Surname",
+                Label = "Surname"
+            },
+            new()
+            {
+                Key = "JobTitle",
+                Label = "Job Title"
+            }
+        };
+    }
+}

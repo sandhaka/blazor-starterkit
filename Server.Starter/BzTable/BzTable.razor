@@ -1,0 +1,57 @@
+@using Server.Starter.BzTable
+@namespace BzTable
+
+<table class="table @Config?.TableCssClass">
+    <thead style="position: sticky; top: 0; background-color: silver">
+    <tr>
+        @foreach (var header in Headers)
+        {
+            <th>@header</th>   
+        }
+    </tr>
+    </thead>
+    <tbody>
+        <Virtualize
+            Context="item"
+            ItemsProvider="@LoadAsync" 
+            TItem="Dictionary<string, object>"
+            SpacerElement="tr"
+            @ref="_productsVirtualizationComponent">
+            <ItemContent>
+                <tr>
+                    @foreach (var itemKey in DataKeys)
+                    {
+                        <td>@item[itemKey]</td>
+                    }
+                </tr>
+            </ItemContent>
+            <Placeholder>
+                Loading ...
+            </Placeholder>
+        </Virtualize>
+    </tbody>
+</table>
+
+@code
+{
+    #region [ Parameters ]
+
+    [Parameter] public List<BzTableField>? Fields { get; set; }
+    [Parameter] public BzTableConfig? Config { get; set; }
+    [Parameter] public IBzTableDataProvider? DataProvider { get; set; }
+
+    #endregion
+
+    private Virtualize<Dictionary<string, object>>? _productsVirtualizationComponent;
+    
+    private IEnumerable<string> Headers => Fields?.Select(f => f.Label) ?? new string[] { };
+
+    private IEnumerable<string> DataKeys => Fields?.Select(f => f.Key) ?? new string[] { };
+
+    private async ValueTask<ItemsProviderResult<Dictionary<string, object>>> LoadAsync(ItemsProviderRequest request)
+    {
+        var pageData = await DataProvider!.LoadPageAsync(new BzTableColumnFilter(), request.Count, request.StartIndex);
+        var result = new ItemsProviderResult<Dictionary<string, object>>(pageData.Items, pageData.TotalCount);
+        return result;
+    }
+}
