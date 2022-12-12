@@ -1,0 +1,12 @@
+::deep .form-label {
+    width: 100%;
+    font-size: .775rem;
+}
+
+::deep .form-control {
+    font-size: .800rem;
+}
+
+::deep .form-select {
+    font-size: .800rem;
+}

@@ -1,0 +1,27 @@
+@using System.Linq.Expressions
+
+@namespace Components.AdvancedForm
+@inherits InputBase<int>
+
+<label class="form-label">@Label
+    <input type="number" @bind="@CurrentValue" @bind:event="oninput" class="form-control @CssClass"/>
+    <ValidationMessage For="ValidationMessageExpression"/>
+</label>
+
+@code {
+    [Parameter] public Expression<Func<int>>? ValidationMessageExpression { get; set; }
+    [Parameter] public string? Label { get; set; }
+    
+    protected override bool TryParseValueFromString(string? value, out int result, out string? validationErrorMessage)
+    {
+        if (string.IsNullOrEmpty(value) || !int.TryParse(value, out result))
+        {
+            result = default;
+            validationErrorMessage = $"Unable to parsing string: {value}, to int";
+            return false;
+        }
+        
+        validationErrorMessage = null;
+        return true;
+    }
+}

@@ -1,0 +1,27 @@
+@using System.Linq.Expressions
+
+@namespace Components.AdvancedForm
+@inherits InputBase<bool>
+
+<label class="form-label">@Label
+    <input type="checkbox" @bind="@CurrentValue" @bind:event="oninput" class="form-check @CssClass"/>
+    <ValidationMessage For="ValidationMessageExpression"/>
+</label>
+
+@code {
+    [Parameter] public Expression<Func<bool>>? ValidationMessageExpression { get; set; }
+    [Parameter] public string? Label { get; set; }
+
+    protected override bool TryParseValueFromString(string? value, out bool result, out string? validationErrorMessage)
+    {
+        if (string.IsNullOrEmpty(value) || !bool.TryParse(value, out result))
+        {
+            result = default;
+            validationErrorMessage = $"Unable to parsing string: {value}, to bool";
+            return false;
+        }
+        
+        validationErrorMessage = null;
+        return true;
+    }
+}

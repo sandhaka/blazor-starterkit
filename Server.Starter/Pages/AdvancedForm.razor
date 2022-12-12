@@ -1,8 +1,134 @@
 @page "/advanced-form"
 
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@implements IDisposable
+
 <h3>AdvancedForm</h3>
-<p>TODO</p>
+<p>Improvements:</p>
+<ul>
+    <li>
+        <p>Input Text Component validate on 'oninput' event instead</p>
+    </li>
+    <li>
+        <p>Include label in components</p>
+    </li>
+    <li>
+        <p>Include error message in components</p>
+    </li>
+</ul>
+
+@* Subclassing of InputBase component *@
+
+<EditForm EditContext="_editContext" OnValidSubmit="@HandleValidSubmit" class="form-group">
+    <DataAnnotationsValidator/>
+    
+    <div class="row">
+        <div class="col-2">
+            <BzInputNumber 
+                Label="Screws" 
+                @bind-Value="_formModel.Screws" 
+                ValidationMessageExpression="() =>  _formModel.Screws" />
+        </div>
+        <div class="col-2">
+            <BzInputNumber 
+                Label="Bolts" 
+                @bind-Value="_formModel.Bolts" 
+                ValidationMessageExpression="() =>  _formModel.Bolts" />
+        </div>
+        <div class="col-2">
+            <BzInputNumber 
+                Label="Nuts" 
+                @bind-Value="_formModel.Nuts" 
+                ValidationMessageExpression="() =>  _formModel.Nuts" />
+        </div>
+        <div class="col-2">
+            <BzCheckBox
+                Label="Include a screwdriver"
+                @bind-Value="_formModel.ShouldAddAScrewDriver"
+                ValidationMessageExpression="() =>  _formModel.ShouldAddAScrewDriver"/>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-4">
+            <BzInputText 
+                Label="Full name"
+                @bind-Value="_formModel.BuyerFullName"
+                ValidationMessageExpression="() => _formModel.BuyerFullName"/>
+        </div>
+    </div>
+    <hr/>
+    <div class="col-3">
+        <label class="form-label">
+            Place order
+            <button class="form-control btn btn-primary" type="submit">Submit</button>
+        </label>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <code>
+                @_serializedPlacedOrderData
+            </code>
+        </div>
+    </div>
+</EditForm>
+
 
 @code {
+
+    internal class HardwareBasket
+    {
+        public int Screws { get; set; }
+        public int Bolts { get; set; }
+        public int Nuts { get; set; }
+        public bool ShouldAddAScrewDriver { get; set; }
+        [Required(ErrorMessage = "Please specify your full name")]
+        public string? BuyerFullName { get; set; }
+    }
+
+    private readonly HardwareBasket _formModel = new();
+    private EditContext? _editContext;
+    private string _serializedPlacedOrderData = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _editContext = new EditContext(_formModel);
+        _editContext.OnValidationRequested += HandleValidationRequested;
+        _editContext.OnFieldChanged += HandleEditContextFieldChanged;
+    }
+
+    private void HandleEditContextFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        var propertyName = e.FieldIdentifier.FieldName;
+        var propertyValue = e.FieldIdentifier.Model.GetType()
+            .GetProperty(propertyName)
+            ?.GetValue(e.FieldIdentifier.Model);
+        
+        Console.WriteLine($"Field has changed, ({propertyName} : {propertyValue})");
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs e)
+    {
+        _serializedPlacedOrderData = string.Empty;
+    }
     
+    private void HandleValidSubmit()
+    {
+        _serializedPlacedOrderData = JsonSerializer.Serialize(
+            _formModel,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true }
+            );
+    }
+    
+    public void Dispose()
+    {
+        if (_editContext is null)
+            return;
+
+        _editContext.OnValidationRequested -= HandleValidationRequested;
+        _editContext.OnFieldChanged -= HandleEditContextFieldChanged;
+        
+        GC.SuppressFinalize(this);
+    }
 }
