@@ -1,15 +1,23 @@
 @page "/bztabletest"
 
 @using BzTable
-@using Server.Starter.Data.Northwind
+@using Server.Starter.Components.BzTableTest
 
 @inject IBzTableDataNorthwindProvider BzTableDataProvider;
 
-<BzTable
-    Fields="@FieldsList"
-    Config="@Config"
-    DataProvider="@BzTableDataProvider">
-</BzTable>
+<h3>BzTable component</h3>
+<p>Auto generated table</p>
+<hr/>
+
+<div class="row">
+    <div class="col-12">
+        <BzTable
+            Fields="@FieldsList"
+            Config="@Config"
+            DataProvider="@BzTableDataProvider">
+        </BzTable>
+    </div>
+</div>
 
 @code {
 
@@ -20,28 +28,13 @@
     {
         Config = new BzTableConfig
         {
-            BuildFilters = false,
-            MakeSortable = false,
-            TableCssClass = "table-striped"
+            BuildFilters = true,
+            MakeSortable = true,
+            TableCssClass = "table-striped",
+            ItemSize = 50,
+            ContainerCssClass = "table-container"
         };
 
-        FieldsList = new List<BzTableField>
-        {
-            new()
-            {
-                Key = "Name",
-                Label = "Name"
-            },
-            new()
-            {
-                Key = "Surname",
-                Label = "Surname"
-            },
-            new()
-            {
-                Key = "JobTitle",
-                Label = "Job Title"
-            }
-        };
+        FieldsList = BzTableDataNorthwindProvider.GetFields();
     }
 }

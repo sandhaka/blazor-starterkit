@@ -1,5 +1,6 @@
 using InMemorySampleDatabase;
 using Microsoft.EntityFrameworkCore;
+using Server.Starter.Components.BzTableTest;
 using Server.Starter.Data;
 using Server.Starter.Data.Northwind;
 
@@ -11,7 +12,8 @@ builder.Services.AddServerSideBlazor();
 
 // Register services
 builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddScoped<INorthwindService, NorthwindService>();
+builder.Services.AddScoped<IProductsService, ProductsService>();
+builder.Services.AddScoped<IOrdersService, OrdersService>();
 builder.Services.AddScoped<IBzTableDataNorthwindProvider, BzTableDataNorthwindProvider>();
 
 // DbContext

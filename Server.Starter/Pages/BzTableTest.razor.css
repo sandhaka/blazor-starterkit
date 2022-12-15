@@ -1,0 +1,5 @@
+::deep .table-container {
+    height:500px;
+    overflow-y:scroll;
+    border: black solid 1px;
+}

@@ -3,7 +3,7 @@
 @using Server.Starter.Data.Northwind
 @using InMemorySampleDatabase.Entities
 
-@inject INorthwindService NorthwindService
+@inject IProductsService ProductsService
 
 <h3>Product Table</h3>
 <hr/>
@@ -110,8 +110,8 @@
 
     private ValueTask<ItemsProviderResult<Product>> LoadProducts(ItemsProviderRequest request)
     {
-        var totalProducts = NorthwindService.Count(_textInclude, _fromPrice, _toPrice);
-        var products = NorthwindService.GetVirtualPage(_textInclude, _fromPrice, _toPrice, request.Count, request.StartIndex);
+        var totalProducts = ProductsService.Count(_textInclude, _fromPrice, _toPrice);
+        var products = ProductsService.GetVirtualPage(_textInclude, _fromPrice, _toPrice, request.Count, request.StartIndex);
         return ValueTask.FromResult(new ItemsProviderResult<Product>(products, totalProducts));
     }
 }

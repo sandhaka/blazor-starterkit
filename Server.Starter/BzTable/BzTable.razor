@@ -1,19 +1,58 @@
 @using Server.Starter.BzTable
 @namespace BzTable
 
-<table class="table @Config?.TableCssClass">
-    <thead style="position: sticky; top: 0; background-color: silver">
-    <tr>
-        @foreach (var header in Headers)
-        {
-            <th>@header</th>   
-        }
-    </tr>
-    </thead>
-    <tbody>
+<div class="row">
+    <div class="col-10"></div>
+    <div class="col-1">
+        <label class="form-label">
+            <button
+                class="form-control btn btn-sm btn-primary"
+                onclick="@FilterApply"
+                type="button">Apply filter
+            </button>
+        </label>
+    </div>
+    <div class="col-1">
+        <label class="form-label">
+            <button
+                class="form-control btn btn-sm btn-secondary"
+                onclick="@FilterReset"
+                type="button">Reset filter
+            </button>
+        </label>
+    </div>
+</div>
+<div class="row">
+    @foreach (var filter in _filters)
+    {
+        <div class="col-3">
+            <label class="form-label">
+                @filter.Label
+                <input
+                    type="text"
+                    @bind="@filter.Value"
+                    class="form-control"/>
+            </label>
+        </div>
+    }
+</div>
+<hr/>
+<div class="@Config?.ContainerCssClass">
+    <table class="table @Config?.TableCssClass">
+        <thead style="position: sticky; top: 0; background-color: silver">
+        <tr>
+            @foreach (var header in Headers)
+            {
+                <th>@header</th>   
+            }
+        </tr>
+        </thead>
+        <tbody>
         <Virtualize
             Context="item"
+            ItemSize="@Config!.ItemSize"
             ItemsProvider="@LoadAsync" 
+            OverscanCount=10
             TItem="Dictionary<string, object>"
             SpacerElement="tr"
             @ref="_productsVirtualizationComponent">
@@ -29,8 +68,10 @@
                 Loading ...
             </Placeholder>
         </Virtualize>
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>
+
 
 @code
 {
@@ -42,16 +83,42 @@
 
     #endregion
 
-    private Virtualize<Dictionary<string, object>>? _productsVirtualizationComponent;
+    private Virtualize<Dictionary<string, object?>>? _productsVirtualizationComponent;
+    private BzTableColumnFilter[] _filters = Array.Empty<BzTableColumnFilter>();
+
+    protected override void OnInitialized()
+    {
+        _filters = Fields?
+            .Where(f => f.Filterable)
+            .Select(f => new BzTableColumnFilter { Label = f.Label, FieldKey = f.Key, Value = null })
+            .ToArray() ?? Array.Empty<BzTableColumnFilter>();
+    }
     
     private IEnumerable<string> Headers => Fields?.Select(f => f.Label) ?? new string[] { };
 
     private IEnumerable<string> DataKeys => Fields?.Select(f => f.Key) ?? new string[] { };
 
-    private async ValueTask<ItemsProviderResult<Dictionary<string, object>>> LoadAsync(ItemsProviderRequest request)
+    private IEnumerable<BzTableColumnFilter> ColumnFilters => Fields?
+        .Where(f => f.Filterable)
+        .Select(f => new BzTableColumnFilter { Label = f.Label, FieldKey = f.Key, Value = null }) 
+                                                              ?? new List<BzTableColumnFilter>();
+    private async ValueTask<ItemsProviderResult<Dictionary<string, object?>>> LoadAsync(ItemsProviderRequest request)
     {
-        var pageData = await DataProvider!.LoadPageAsync(new BzTableColumnFilter(), request.Count, request.StartIndex);
-        var result = new ItemsProviderResult<Dictionary<string, object>>(pageData.Items, pageData.TotalCount);
+        var pageData = await DataProvider!.GetVirtualPageAsync(request.Count, request.StartIndex, _filters);
+        var result = new ItemsProviderResult<Dictionary<string, object?>>(pageData.Items, pageData.Total);
         return result;
+    }
+
+    private void FilterApply(object _)
+    {
+        _productsVirtualizationComponent?.RefreshDataAsync();
+    }
+    
+    private void FilterReset(object _)
+    {
+        foreach (var columnFilter in _filters)
+            columnFilter.Value = null;
+        StateHasChanged();
+        _productsVirtualizationComponent?.RefreshDataAsync();
     }
 }

@@ -1,9 +1,9 @@
 @using Server.Starter.Data.Northwind
 @using InMemorySampleDatabase.Entities
 
-@namespace Components.BindingSamples
+@namespace Server.Starter.Components.BindingSamples
 
-@inject INorthwindService NorthwindService
+@inject IProductsService ProductsService
 
 <h3>Product Table</h3>
 @if (_productsData is null)
@@ -65,6 +65,6 @@ else
 
     private void Load()
     {
-        _productsData = NorthwindService.GetPaged(_textInclude, _fromPrize, _toPrice, _pageSize, _pageNumber);
+        _productsData = ProductsService.GetPaged(_textInclude, _fromPrize, _toPrice, _pageSize, _pageNumber);
     }
 }

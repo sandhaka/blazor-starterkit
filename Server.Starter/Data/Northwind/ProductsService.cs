@@ -5,18 +5,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Server.Starter.Data.Northwind;
 
-internal interface INorthwindService
+internal interface IProductsService
 {
     PagedResult<Product> GetPaged(string nameText, decimal priceFrom, decimal priceTo, int pageSize, int pageNumber);
     IEnumerable<Product> GetVirtualPage(string nameText, decimal priceFrom, decimal priceTo, int count, int offset, string? orderBy = null);
     int Count(string nameText, decimal priceFrom, decimal priceTo);
 }
 
-internal sealed class NorthwindService : INorthwindService
+internal sealed class ProductsService : IProductsService
 {
     private readonly NorthwindContext _dbContext;
 
-    public NorthwindService(NorthwindContext dbContext)
+    public ProductsService(NorthwindContext dbContext)
     {
         _dbContext = dbContext;
     }
