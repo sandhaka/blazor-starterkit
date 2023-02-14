@@ -1,0 +1,72 @@
+﻿@page "/dropdown"
+
+<h3>Dropdown - Prove</h3>
+<hr />
+
+<h4>Prima Prova</h4>
+<div class="container row">
+    <div class="col-3">
+        <select class="form-control" @bind="selectedOption">
+            <option value="">Select a city</option>
+            <option value="Milano">Milano</option>
+            <option value="Torino">Torino</option>
+            <option value="Roma">Roma</option>
+            <hr />
+            <option value="Custom">New city</option>
+        </select>
+    </div>
+</div>
+
+@if (selectedOption == "Custom")
+{
+    <br />
+    <div class="container row">
+        <div class="col-3">
+            <input type="text" class="form-control" @bind-value="customOption" placeholder="Enter your city" />
+            <button type="button" class="btn btn-outline-secondary" @onclick="addItem">add option</button>
+        </div>
+    </div>
+}
+
+<hr />
+<br />
+
+<div>
+    <p>Hai scelto: @selectedOption</p>
+</div>
+
+
+<br />
+<hr />
+
+<h4>Seconda Prova</h4>
+<input type="text" list="textsearch" placeholder="Città" @bind="cityOption" />
+<datalist id="textsearch">
+    <option>Milano</option>
+    <option>Torino</option>
+    <option>Venezia</option>
+</datalist>
+
+<hr />
+<br />
+
+<div>
+    <p>Hai scelto: @cityOption</p>
+</div>
+
+
+@code {
+    private void addItem()
+    {
+        if (selectedOption == "Custom")
+        {
+            selectedOption = customOption;
+        }
+        return;
+    }
+
+    private string selectedOption = "";
+    private string customOption = "";
+
+    private string cityOption = "";
+}

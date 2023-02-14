@@ -1,8 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Starter", "Server.Starter\Server.Starter.csproj", "{BD10344F-D39C-4297-ACF4-49974169A5A7}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Starter", "Server.Starter\Server.Starter.csproj", "{BD10344F-D39C-4297-ACF4-49974169A5A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InMemorySampleDatabase", "InMemorySampleDatabase\InMemorySampleDatabase.csproj", "{B38424D8-215D-432C-B7AE-69DB3F5EE26D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InMemorySampleDatabase", "InMemorySampleDatabase\InMemorySampleDatabase.csproj", "{B38424D8-215D-432C-B7AE-69DB3F5EE26D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +21,11 @@ Global
 		{B38424D8-215D-432C-B7AE-69DB3F5EE26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B38424D8-215D-432C-B7AE-69DB3F5EE26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B38424D8-215D-432C-B7AE-69DB3F5EE26D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B5428DE2-1D5F-4A76-AD2A-A8597E1894CE}
 	EndGlobalSection
 EndGlobal
