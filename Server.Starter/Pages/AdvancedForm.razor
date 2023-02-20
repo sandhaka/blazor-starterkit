@@ -48,6 +48,13 @@
                 @bind-Value="_formModel.ShouldAddAScrewDriver"
                 ValidationMessageExpression="() =>  _formModel.ShouldAddAScrewDriver"/>
         </div>
+        <div class="col-2">
+            <BzDropdown
+                Label="Select a subsidiary"
+                @bind-Value="_formModel.Subsidiary"
+                Options="_subOptions"
+                ValidationMessageExpression="() => _formModel.Subsidiary"/>
+        </div>
     </div>
     <hr/>
     <div class="row">
@@ -85,11 +92,22 @@
         public bool ShouldAddAScrewDriver { get; set; }
         [Required(ErrorMessage = "Please specify your full name")]
         public string? BuyerFullName { get; set; }
+        [Required(ErrorMessage = "Please specify a subsidiary")]
+        public string? Subsidiary { get; set; }
     }
 
     private readonly HardwareBasket _formModel = new();
+    private readonly List<ValueTuple<string, string>> _subOptions = new()
+    {
+        ("RM", "Rome"),
+        ("MI", "Milan"),
+        ("FI", "Florence"),
+        ("CO", "Como"),
+    };
+    
     private EditContext? _editContext;
     private string _serializedPlacedOrderData = string.Empty;
+
 
     protected override void OnInitialized()
     {

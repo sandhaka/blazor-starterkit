@@ -1,0 +1,31 @@
+@using System.Linq.Expressions
+
+@namespace Server.Starter.Components.AdvancedForm
+@inherits InputBase<string>
+
+<label class="form-label">@Label
+    <select TValue="string" @bind="@CurrentValue" class="form-control">
+        <option value="">Select a city</option>
+        @if (Options is not null)
+        {
+            @foreach (var option in Options)
+            {
+                <option value="@option.Item1">@option.Item2</option>
+            }
+        }
+    </select>
+    <ValidationMessage For="ValidationMessageExpression"/>
+</label>
+
+@code {
+    [Parameter] public Expression<Func<string>>? ValidationMessageExpression { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public List<ValueTuple<string, string>>? Options { get; set; }
+    
+    protected override bool TryParseValueFromString(string? value, out string result, out string? validationErrorMessage)
+    {
+        result = value ?? string.Empty;
+        validationErrorMessage = null;
+        return true;
+    }
+}
